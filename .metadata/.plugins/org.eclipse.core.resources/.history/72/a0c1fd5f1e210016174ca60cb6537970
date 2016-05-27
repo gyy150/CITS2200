@@ -1,0 +1,10 @@
+
+public class test {
+	public static void main(String[] argv){
+		BinarySearchTree a = new BinarySearchTree(0);
+		a.addNode(10);
+		a.addNode(20);
+		a.addNode(15);
+		a.addNode(20);
+	}
+}

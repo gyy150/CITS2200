@@ -1,0 +1,9 @@
+
+public class Edge {
+	int Vertex1Index;
+	int  Vertex2Index;
+	public Edge(int Vertex1Index, int Vertex2Index){
+		this.Vertex1Index = Vertex1Index;
+		this.Vertex2Index = Vertex2Index;
+	}
+}

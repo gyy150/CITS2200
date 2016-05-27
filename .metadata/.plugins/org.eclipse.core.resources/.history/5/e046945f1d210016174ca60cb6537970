@@ -1,0 +1,35 @@
+
+public class BinarySearchTree {
+	private int data;
+	private BinarySearchTree left;
+	private BinarySearchTree right;
+	static int  IndexCounter = 0;
+	
+	public BinarySearchTree(int num) {
+		this.data = num;
+		this.left = null;
+		this.right = null;
+	}
+	public void addNode(int num) {
+		if (num < this.data) {
+			if (this.left != null) {
+				this.left.addNode(num);
+		} 
+			else {
+				this.left = new BinaryTree(num);
+			}
+
+		} 
+		else {
+			if (this.right != null) {
+				this.right.addNode(num);
+			}
+			else {
+				this.right = new BinaryTree(num);
+			}
+
+		}
+	
+	}
+	
+}

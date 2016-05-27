@@ -1,0 +1,27 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+public class InputReader {
+	public static void main(String[] args) {
+		
+		File file = new File(".");
+		for(String fileNames : file.list()) System.out.println(fileNames);
+		
+		try (BufferedReader br = new BufferedReader(new FileReader("428333.edges")))
+		{
+
+			String sCurrentLine;
+
+			while ((sCurrentLine = br.readLine()) != null) {
+				System.out.println(sCurrentLine);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+	}
+	
+	
+}

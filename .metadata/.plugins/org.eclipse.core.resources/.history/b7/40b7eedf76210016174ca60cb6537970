@@ -1,0 +1,59 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+public class InputReader {
+	public static void main(String[] args) {
+		
+		File file = new File(".");
+		for(String fileNames : file.list()){
+			System.out.println(fileNames);
+		}
+		
+		try (BufferedReader br = new BufferedReader(new FileReader("428333.edges")))
+		{
+
+			String sCurrentLine;
+			String[] v;													//edge specified by two vertex
+			int Vertex1Index;
+			int Vertex2Index;
+			LinkedList<Edge> EdgeList = new LinkedList<Edge>();  		//linked list containing all edges
+			
+			//*********innitializing and creating the first two node in the binary tree from the first line of text file
+			sCurrentLine = br.readLine();
+			v = sCurrentLine.split(" ");
+			int vertex1 = Integer.parseInt(v[0]);
+			BinarySearchTree VertexTree = new BinarySearchTree(vertex1);  				//creating a new binary seach tree, an tree with a node 0 at root
+			Vertex1Index = BinarySearchTree.IndexCounter;
+			int vertex2 = Integer.parseInt(v[1]);   
+			Vertex2Index = VertexTree.addNode(vertex2);	
+			EdgeList.add( new Edge( Vertex1Index , Vertex2Index ,vertex1 , vertex2 )  );
+			//*************************************************************************************
+			
+			while ((sCurrentLine = br.readLine()) != null) {
+				v = sCurrentLine.split(" ");
+				System.out.println(v[0] + " " + v[1]);
+				vertex1 = Integer.parseInt(v[0]);
+				Vertex1Index = VertexTree.addNode(vertex1);				//if vertex has never been put into the tree brfore
+				
+				vertex2 = Integer.parseInt(v[1]);          
+				Vertex2Index = VertexTree.addNode(vertex2);	
+				EdgeList.add( new Edge( Vertex1Index , Vertex2Index ,vertex1 , vertex2 )  );
+				
+			}
+			//************contructing the vertext array and adjacency matrix from the edge list 
+			int NumberofVertex = BinarySearchTree.IndexCounter+1;
+			int[] VertexArray = new int[NumberofVertex];
+			int[][] AdjacencyMatrix = new int[NumberofVertex][NumberofVertex];
+			
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+	}
+	
+	
+}

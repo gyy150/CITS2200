@@ -1,0 +1,17 @@
+
+public class test {
+	public static void main(String[] argv){
+		BinarySearchTree a = new BinarySearchTree(5);
+		System.out.println(BinarySearchTree.IndexCounter);
+		a.addNode(10);
+		System.out.println(BinarySearchTree.IndexCounter);
+		a.addNode(20);
+		System.out.println(BinarySearchTree.IndexCounter);
+		a.addNode(15);
+		System.out.println(BinarySearchTree.IndexCounter);
+		
+		System.out.println(a.addNode(20));
+		System.out.println(BinarySearchTree.IndexCounter);
+		
+	}
+}

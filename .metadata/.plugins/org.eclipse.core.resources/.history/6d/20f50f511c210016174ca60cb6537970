@@ -1,0 +1,11 @@
+
+public class BinaryTree {
+	private int data;
+	private BinaryTree left;
+	private BinaryTree right;
+	public BinaryTree(int num) {
+		this.data = num;
+		this.left = null;
+		this.right = null;
+		}
+}

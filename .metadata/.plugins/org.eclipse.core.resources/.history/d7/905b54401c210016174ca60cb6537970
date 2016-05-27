@@ -1,0 +1,7 @@
+
+public class BinarySearchTree {
+	private int data;
+	private BinaryTree left;
+	private BinaryTree right;
+	
+}

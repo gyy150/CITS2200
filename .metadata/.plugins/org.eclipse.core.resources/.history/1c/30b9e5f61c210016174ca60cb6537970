@@ -1,0 +1,16 @@
+
+public class BinarySearchTree {
+	private int data;
+	private BinarySearchTree left;
+	private BinarySearchTree right;
+	static int  IndexCounter = 0;
+	
+	public BinarySearchTree(int num) {
+		this.data = num;
+		this.left = null;
+		this.right = null;
+	}
+	
+	
+	
+}
