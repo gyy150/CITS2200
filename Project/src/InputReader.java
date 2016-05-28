@@ -166,5 +166,50 @@ public class InputReader {
 		
 		return c;
 	}
+	public int FindBetweennessCentrality(int SourceVertexIndex){
+		
+		
+		
+		
+		
+		
+	}
+	/***
+	 * 
+	 * @param SourceVertexIndex
+	 * @param a   attenuation coefficient  //power of attenuation factor and number of hops away from source
+	 * @return
+	 */
+	
+	public double FindKatzCentrality(int SourceVertexIndex, double a){
+		//Breadth first search 
+		int[] hop = new int[NumberofVertex];						//an array to keep track of how many hops each vertex is away from the source
+		hop[SourceVertexIndex] = 0;									//source vertex is zero hops away
+		int[] colour = new int[NumberofVertex];
+		double KatzCentrality = 0;		
+		Arrays.fill(colour, 0); 									//mark all vertex as white
+		PriorityQueue<Integer> Q = new PriorityQueue<Integer>();
+		Q.add(SourceVertexIndex);
+		colour[SourceVertexIndex] = -1;								//mark the source vertex as grey, as it is in the queue already
+		while(!Q.isEmpty()){
+			int w = Q.poll();
+			for(int i =0; i < NumberofVertex; i++){
+				if(  w!=i && AdjacencyMatrix[w][i] > 0 && colour[i] == 0  ){		
+					hop[i] = hop[w] + 1;
+					Q.add(i);
+					colour[i] = -1;									//mark the vertex as grey as it is in the vertex
+					KatzCentrality = KatzCentrality + Math.pow(a, hop[i]); 
+				}
+			}
+			colour[w] = -2;											//mark the vertex as black after is done with it		
+		}
+		return KatzCentrality;
+	}
+	
+	
+	
+	
+	
+	
 	
 }
