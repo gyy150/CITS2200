@@ -167,6 +167,7 @@ public class InputReader {
 		return c;
 	}
 	public int FindBetweennessCentrality(int SourceVertexIndex){
+		return SourceVertexIndex;
 		
 		
 		
