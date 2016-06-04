@@ -1,0 +1,325 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+public class InputReader {
+	
+	public int NumberofVertex ;
+	public int[] VertexArray ;
+	public int[] VertexEdgeNumber;
+	public int[][] AdjacencyMatrix ;
+	public LinkedList<Edge> EdgeList;
+	public PathList[][] PathListArray;
+	
+	public InputReader(String filepath) throws IOException {
+		
+		Path file=Paths.get(filepath);
+		InputStream is=Files.newInputStream(file);
+		
+		
+		try (BufferedReader br = new BufferedReader(new  InputStreamReader(is)))
+		{
+
+			String sCurrentLine;
+			String[] v;													//edge specified by two vertex
+			int Vertex1Index;
+			int Vertex2Index;
+			EdgeList = new LinkedList<Edge>();  		//linked list containing all edges
+			
+			
+			//*********Initializing and creating the first two node in the binary tree from the first line of text file
+			sCurrentLine = br.readLine();
+			v = sCurrentLine.split(" ");
+			int vertex1 = Integer.parseInt(v[0]);
+			BinarySearchTree VertexTree = new BinarySearchTree(vertex1);  				//creating a new binary seach tree, an tree with a node 0 at root
+			Vertex1Index = BinarySearchTree.IndexCounter;
+			int vertex2 = Integer.parseInt(v[1]);   
+			Vertex2Index = VertexTree.addNode(vertex2);	
+			EdgeList.add( new Edge( Vertex1Index , Vertex2Index ,vertex1 , vertex2 )  );
+			//*************************************************************************************
+			
+			
+			
+			while ((sCurrentLine = br.readLine()) != null) {
+				v = sCurrentLine.split(" ");
+				System.out.println(v[0] + " " + v[1]);
+				vertex1 = Integer.parseInt(v[0]);
+				Vertex1Index = VertexTree.addNode(vertex1);				//if vertex has never been put into the tree brfore
+				
+				vertex2 = Integer.parseInt(v[1]);          
+				Vertex2Index = VertexTree.addNode(vertex2);	
+				EdgeList.add( new Edge( Vertex1Index , Vertex2Index ,vertex1 , vertex2 )  );
+				
+			}
+			
+			
+			//************contructing the vertext array and adjacency matrix from the edge list 
+			NumberofVertex = BinarySearchTree.IndexCounter+1;
+			VertexArray = new int[NumberofVertex];
+			VertexEdgeNumber = new int[NumberofVertex];
+			AdjacencyMatrix = new int[NumberofVertex][NumberofVertex];
+			PathListArray = new PathList[NumberofVertex][NumberofVertex];
+			ListIterator<Edge> listIterator = EdgeList.listIterator();
+			PathList a;
+			while (listIterator.hasNext()) {
+				Edge E = listIterator.next();
+				
+				//*******************if the number of edges incident on one node is 0, then this node has never been seen before, so update vertex array first
+				if(VertexEdgeNumber[E.Vertex1Index] == 0 ){
+					VertexArray[E.Vertex1Index] = E.Vertex1;
+					VertexEdgeNumber[E.Vertex1Index] = 1; 
+				}
+				/***
+				else{
+					VertexEdgeNumber[E.Vertex1Index] = VertexEdgeNumber[E.Vertex1Index] + 1; 					//if not, then only update unmber of incident edges
+				}
+				***/
+				if(VertexEdgeNumber[E.Vertex2Index] == 0 ){
+					VertexArray[E.Vertex2Index] = E.Vertex2;
+					VertexEdgeNumber[E.Vertex2Index] = 1; 
+				}
+				/***
+				else{
+					VertexEdgeNumber[E.Vertex2Index] = VertexEdgeNumber[E.Vertex2Index] + 1; 
+				}
+				***/
+				//*************************************************************************************************
+				
+				AdjacencyMatrix[E.Vertex1Index][E.Vertex2Index] = 1;
+				a = new PathList();								
+				PathListArray[E.Vertex1Index][E.Vertex2Index] = a;			  //initialize path from vertex1 to vertex2
+				a.addPath(E.Vertex1Index);
+				System.out.println("aaaaaaaaaaaaaaaaaaaaaaa"+Vertex1Index);
+				
+				AdjacencyMatrix[E.Vertex2Index][E.Vertex1Index] = 1;          //since the graph is undirected, then update the symmetrical value in the matrix
+				a = new PathList();
+				PathListArray[E.Vertex2Index][E.Vertex1Index] = a;			  //initialize path from vertex2 to vertex1
+				a.addPath(E.Vertex2Index);
+			
+			}
+			//******************************************************************************************************
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+	}
+	
+    public void PrintAdjacencyMatrix(){
+    	for(int i = 0; i < NumberofVertex; i++){
+		      for(int j = 0; j < NumberofVertex; j++){
+		         System.out.printf("%5d ", AdjacencyMatrix[i][j]);
+		      }
+		      System.out.println();
+		}
+    }
+	
+    public void PrintPathListArray(){
+    	int z = 0;
+    	for(int i = 0; i < NumberofVertex; i++){
+    		
+		      for(int j = z; j < NumberofVertex; j++){
+		         PathList pl = PathListArray[i][j];
+		         if(pl != null){
+		        	 System.out.printf("from vertex: %d(%d) to vertex: %d(%d) has %d paths in total \n", VertexArray[i],i, VertexArray[j],j, pl.getPathCount() );
+		        	 pl.printAllPath();
+		         }
+		      }
+		      System.out.println();
+		      z++;
+		}
+    }
+    
+    
+	
+	public int FindDegreeCentrality(){
+		
+		int MaxNumberOfConnection = 0;
+		int v = 0;
+	    for (int i=0; i < NumberofVertex; i++) {
+	    	int NumberofConnection = 0;
+	    	for (int j=0; j < NumberofVertex; j++) {
+	    		if (AdjacencyMatrix[i][j] >0 ) {
+	    			NumberofConnection++;
+	    		}
+	    	}
+	    	VertexEdgeNumber[i] = NumberofConnection;
+	        if(MaxNumberOfConnection < NumberofConnection ){
+	        	MaxNumberOfConnection = NumberofConnection;
+	        	v = i;
+	        }
+	    }
+	    return VertexEdgeNumber[v];
+	}
+	
+	
+	public float FindClosenessCentrality(int SourceVertexIndex){
+		
+		int[] distance = new int[NumberofVertex];
+		
+		Arrays.fill(distance, Integer.MAX_VALUE);     	//innitialize the array with infinite distance
+		distance[SourceVertexIndex] = 0;				//set the distance of source to be 0
+		
+		//********************bell-man ford search, *************************************************************************//
+		for(int i =0; i<NumberofVertex-1; i++){
+			for( Edge E : EdgeList   ){												//each edge represent a egde going from vertex 1 to vertex 2
+				
+				System.out.println("" );
+				System.out.println(E.Vertex1Index );
+				System.out.println(E.Vertex2Index);
+				System.out.println(distance[E.Vertex1Index] );
+				System.out.println(distance[E.Vertex2Index] );
+				System.out.println("hellop" );
+				
+				int Weight = AdjacencyMatrix[E.Vertex1Index][E.Vertex2Index];         //the weight of egde from vertex1 to vertex 2
+				if( Weight ==0 ){													//if the weight is zero, which means it was not initialized in the adjacency matrix, then vertex1 cannot be reached from vertex1, meanning the actually distance is infinite
+					Weight = Integer.MAX_VALUE;
+				}	
+				
+				if(   distance[E.Vertex1Index]!= Integer.MAX_VALUE &&  Weight!= Integer.MAX_VALUE  &&  distance[E.Vertex2Index] >  distance[E.Vertex1Index] + Weight      ){
+					  distance[E.Vertex2Index] = distance[E.Vertex1Index] + Weight;   //AdjacencyMatrix[E.Vertex2Index][E.Vertex1Index]   distance from vertex2 to vertex 1
+				}
+				if(   distance[E.Vertex2Index]!= Integer.MAX_VALUE &&  Weight!= Integer.MAX_VALUE  &&  distance[E.Vertex1Index] >  distance[E.Vertex2Index] + Weight      ){
+					  distance[E.Vertex1Index] = distance[E.Vertex2Index] + Weight;   //AdjacencyMatrix[E.Vertex2Index][E.Vertex1Index]   distance from vertex2 to vertex 1
+				}
+			}
+		}
+		
+		int c = 0;
+		System.out.println("****************distance array for source vertex********************************" );
+		for(int i = 0; i < NumberofVertex; i++){
+			 System.out.printf("%5d ",distance[i] );
+			 if(distance[i] == Integer.MAX_VALUE ){
+				 return 0;								//fairness is infinity, so close centrality is 0 
+			 }
+			 c = c+ distance[i];
+		}
+		System.out.println();
+		System.out.println("****************distance array for source vertex********************************");
+		
+		return c;
+	}
+	
+	
+	
+	public int FindBetweennessCentrality(int SourceVertexIndex){
+		//Floyd masharall used to find shortest path
+		int[][] temp;
+		int[][] old_adjM = new int[NumberofVertex][NumberofVertex]; 
+		for (int i = 0; i < NumberofVertex; i++){
+			old_adjM[i] = Arrays.copyOf(AdjacencyMatrix[i], AdjacencyMatrix[i].length);				//creating a deep copy of adjacency matrix
+		}
+		int[][] new_adjM =  new int[NumberofVertex][NumberofVertex];								//new adjacency matrix, where new value will be updated  
+		int ik,ij,kj;
+		PathList a,b,c,d;															//variable for all the path list 
+	
+		int z =1;
+		for(int k=0; k<NumberofVertex; k++){
+			for(int i=1; i<NumberofVertex; i++){
+				for(int j =z ; j<NumberofVertex ; j++){
+					ik = old_adjM[i][k];
+					if( ik ==0 ){													//if the weight is zero, which means it was not initialized in the adjacency matrix, then vertex1 cannot be reached from vertex1, meanning the actually distance is infinite
+						break;														//exit for loop straight away, since it wont yield any result 
+					}	
+					ij = old_adjM[i][j];
+					kj = old_adjM[k][j];
+					if(kj == 0){
+						break;														//if distance from k to j is infinite, then it wont yield any reults as well, thus exit foor loop straight away
+					}
+					
+					a = PathListArray[i][k];									//get the individual path list for each node
+					if(a == null){
+						a = new PathList();
+						PathListArray[i][k] =a;
+					}
+					b = PathListArray[k][j];
+					if(b == null){
+						b = new PathList();
+						PathListArray[k][j] =b;
+					}
+					d = PathListArray[j][i];								//the reverse path form j to i, it should be the same but with the order reversed since the graph is undirected 
+					if(d == null){
+						d = new PathList();
+						PathListArray[j][i] = d;
+					}
+					c = PathListArray[i][j];
+					if(c == null){
+						c = new PathList();
+						PathListArray[i][j] =c;
+					}
+					
+					
+					if( ik+kj == ij    ){											//a new potential shortest path have been found 
+						
+						int size = a.getPathCount() * b.getPathCount();
+						c.addPath(a.combinePath(b));                                //combine all the path from i to k with all the path from k to j, to get the all the path from i to j going through k 
+						c.increaseCountBy(size);
+						
+					}
+					if(ik + kj < ij){												//path from i to k to j is a newer shortest path
+						
+						c.clearPath();									//clear all the path inside the path list science they are no longer shortest 
+						int size = a.getPathCount() * b.getPathCount();
+						c.addPath(a.combinePath(b));   
+						c.increaseCountBy(size);
+						new_adjM[i][j] = ik + kj;
+						
+						new_adjM[j][i] = ik + kj;									//i to j must have the same distance since the graph is undirected
+						
+					}
+					
+				}
+				z++;
+				temp = old_adjM;
+				old_adjM = new_adjM;
+				new_adjM = temp;
+			}
+		}
+		return 0;
+	}
+	
+	
+	
+	/***
+	 * 
+	 * @param SourceVertexIndex
+	 * @param a   attenuation coefficient  //power of attenuation factor and number of hops away from source
+	 * @return
+	 */
+	
+	public double FindKatzCentrality(int SourceVertexIndex, double a){
+		//Breadth first search 
+		int[] hop = new int[NumberofVertex];						//an array to keep track of how many hops each vertex is away from the source
+		hop[SourceVertexIndex] = 0;									//source vertex is zero hops away
+		int[] colour = new int[NumberofVertex];
+		double KatzCentrality = 0;		
+		Arrays.fill(colour, 0); 									//mark all vertex as white
+		PriorityQueue<Integer> Q = new PriorityQueue<Integer>();
+		Q.add(SourceVertexIndex);
+		colour[SourceVertexIndex] = -1;								//mark the source vertex as grey, as it is in the queue already
+		while(!Q.isEmpty()){
+			int w = Q.poll();
+			for(int i =0; i < NumberofVertex; i++){
+				if(  w!=i && AdjacencyMatrix[w][i] > 0 && colour[i] == 0  ){		
+					hop[i] = hop[w] + 1;
+					Q.add(i);
+					colour[i] = -1;									//mark the vertex as grey as it is in the vertex
+					KatzCentrality = KatzCentrality + Math.pow(a, hop[i]); 
+				}
+			}
+			colour[w] = -2;											//mark the vertex as black after is done with it		
+		}
+		return KatzCentrality;
+	}
+	
+	
+	
+	
+	
+	
+	
+}

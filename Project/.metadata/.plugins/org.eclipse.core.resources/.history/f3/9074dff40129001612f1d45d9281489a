@@ -1,0 +1,18 @@
+import java.util.*;
+public class PathList {
+	private int PathCount;
+	public LinkedList<Path> PathList;
+	public PathList(){
+		this.PathList = new LinkedList<Path>();
+		this.PathCount = 1;
+	}
+	
+	public void increaseCount(){
+		this.PathCount++;
+	}
+	
+	public void decreaseCount(){
+		this.PathCount--;
+	}
+	
+}

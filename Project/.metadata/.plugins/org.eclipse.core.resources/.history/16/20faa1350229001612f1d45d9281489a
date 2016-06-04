@@ -1,0 +1,8 @@
+import java.util.*;
+public class Path {
+	public LinkedList<Integer> p;
+	public Path(int s){
+		this.p = new LinkedList<Integer>();
+		p.add(s);
+	}
+}

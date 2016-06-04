@@ -1,0 +1,64 @@
+import java.util.*;
+public class PathList {
+	private int PathCount;
+	public LinkedList<Path> PathList;
+	public PathList(){
+		this.PathList = new LinkedList<Path>();
+		this.PathCount = 1;
+	}
+	public int getPathCount(){
+		return this.PathCount;
+	}
+	public void increaseCountBy(int n){
+		this.PathCount = this.PathCount +n;
+	}
+	
+	public void increaseCount(){
+		this.PathCount++;
+	}
+	
+	public void decreaseCount(){
+		this.PathCount--;
+	}
+	/**
+	 * used to create path from one vertex to another one when they are directly connected 
+	 * @param s the index of source vertex
+	 */
+	public void addPath(int s){
+		this.increaseCount();
+		Path p = new Path(s);
+		this.PathList.add(p);
+	}
+	/**
+	 * 
+	 * @param p a list of path to be added to the current collection of path
+	 */
+	public void addPath(LinkedList<Path> p ){
+		
+	}
+
+	public void printAllPath(){
+		for(Path p :PathList){
+			p.printPath();
+		}
+	}
+	
+	public LinkedList<Path>  combinePath(PathList PL){
+		
+		LinkedList<Path> CombinedPathList = new LinkedList<Path>();
+		for(Path p1: this.PathList){
+			for(Path p2 : PL.PathList){
+				Path p3 = new Path();
+				for(int a : p1.p){
+					p3.p.add(a);
+				}
+				for(int a: p2.p){
+					p3.p.add(a);
+				}
+			}
+		}
+		
+		
+		return null;
+	}
+}

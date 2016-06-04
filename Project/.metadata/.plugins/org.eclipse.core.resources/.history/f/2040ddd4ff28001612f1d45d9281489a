@@ -1,0 +1,8 @@
+import java.util.*;
+public class PathList {
+	public int PathCount;
+	public LinkedList<Path> PathList;
+	public PathList(){
+		
+	}
+}
