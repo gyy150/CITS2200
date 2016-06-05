@@ -1,6 +1,7 @@
 import java.util.*;
 public class PathList {
 	private int PathCount;
+	public int[] score;
 	public LinkedList<ShortestPath> PathList;
 	
 	/**
@@ -30,23 +31,8 @@ public class PathList {
 	public PathList(){
 		this.PathList = new LinkedList<ShortestPath>();
 		this.PathCount = 0;
+		this.
 	}
-	public int getPathCount(){
-		return this.PathCount;
-	}
-	public void increaseCountBy(int n){
-		this.PathCount = this.PathCount +n;
-	}
-	
-	public void increaseCount(){
-		this.PathCount++;
-	}
-	
-	public void decreaseCount(){
-		this.PathCount--;
-	}
-	
-	
 	
 	/**
 	 * used to create path from one vertex to another one when they are directly connected 
@@ -55,9 +41,10 @@ public class PathList {
 	
 	public PathList(int s){
 		this.PathList = new LinkedList<ShortestPath>();
-		this.PathCount = 1;
+		this.PathCount = 0;
 		ShortestPath p = new ShortestPath(s);
-		this.PathList.add(p);
+		this.addPath(p);
+		this.increaseCount();
 		
 	}
 	/**
@@ -66,8 +53,17 @@ public class PathList {
 	 */
 	public void addPath(LinkedList<ShortestPath> p ){
 		for(ShortestPath a : p){
+			a.updateScore(score);
 			this.PathList.add(a);
 		}
+		
+	}
+	/**
+	 * 
+	 * @param p a single path to be added to the current collection of path
+	 */
+	public void addPath(ShortestPath p ){
+		this.PathList.add(p);
 	}
 	/**
 	 * clear all the path stored inside the path list, also reset the path count to be 0
@@ -101,4 +97,21 @@ public class PathList {
 		}
 		return CombinedPathList;
 	}
+	
+	
+	public int getPathCount(){
+		return this.PathCount;
+	}
+	public void increaseCountBy(int n){
+		this.PathCount = this.PathCount +n;
+	}
+	
+	public void increaseCount(){
+		this.PathCount++;
+	}
+	
+	public void decreaseCount(){
+		this.PathCount--;
+	}
+	
 }

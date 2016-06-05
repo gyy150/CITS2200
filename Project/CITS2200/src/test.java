@@ -3,6 +3,25 @@ import java.io.IOException;
 
 public class test {
 	public static void main(String[] argv) throws IOException{
+		//test1();
+		//test2();
+		//test3();
+		test4();
+	}
+	public static void test1(){
+		BinarySearchTree a = new BinarySearchTree(5);
+		System.out.println(BinarySearchTree.IndexCounter);
+		a.addNode(10);
+		System.out.println(BinarySearchTree.IndexCounter);
+		a.addNode(20);
+		System.out.println(BinarySearchTree.IndexCounter);
+		a.addNode(15);
+		System.out.println(BinarySearchTree.IndexCounter);
+		
+		System.out.println(a.addNode(20));
+		System.out.println(BinarySearchTree.IndexCounter);
+	}
+	public static void test2() throws IOException{
 		File file = new File(".");
 		for(String fileNames : file.list()){
 			System.out.println(fileNames);
@@ -14,7 +33,7 @@ public class test {
 		System.out.println("Closeness Centrality" );
 		
 		System.out.println("Degree Centrality" );
-		System.out.println(b.FindDegreeCentrality() );
+		System.out.println(b.FindTopFiveDegreeCentrality() );
 		
 		System.out.println("" );
 		System.out.println("***************number of vertex*********************************" );
@@ -33,20 +52,53 @@ public class test {
 		System.out.println(b.VertexArray[3] );
 		System.out.println(b.VertexArray[4] );
 		**/
+	}
+	
+	public static void test3() throws IOException{
+		File file = new File(".");
+		for(String fileNames : file.list()){
+			System.out.println(fileNames);
+		}
+		String filepath = "/home/uniwa/students8/students/21263128/linux/Desktop/CITS2200/CITS2200/Project/78813.edges";
+		InputReader b = new InputReader(filepath);
+		
+		System.out.println(b.FindClosenessCentrality(0));
+		System.out.println("Closeness Centrality" );
+		
+		System.out.println("Degree Centrality" );
+		System.out.println(b.FindTopFiveDegreeCentrality() );
+		
+		System.out.println("" );
+		System.out.println("***************number of vertex*********************************" );
+		System.out.println(b.NumberofVertex );
+		System.out.println("******************************************************************" );
+		System.out.println(b.FindKatzCentrality(5, 0.2) );
+		System.out.println("******************************************************************" );
+		b.PrintAdjacencyMatrix();
+		b.PrintPathListArray();
+		b.FindBetweennessCentrality(9);
+		b.PrintPathListArray();
+		/***
+		System.out.println(b.VertexArray[5] );
+		System.out.println(b.VertexArray[1]);
+		System.out.println(b.VertexArray[2] );
+		System.out.println(b.VertexArray[3] );
+		System.out.println(b.VertexArray[4] );
+		**/
+	}
+	
+	public static void test4() throws IOException{
+		String filepath = "/home/uniwa/students8/students/21263128/linux/Desktop/CITS2200/CITS2200/Project/78813.edges";
+		InputReader b = new InputReader(filepath);
+		b.PrintAdjacencyMatrix();
+		b.FindTopFiveDegreeCentrality();
+		b.FindTopFiveClosenessCentrality();
+		//b.FindClosenessCentrality(113);
+		b.FindTopFiveKatzCentrality(0.5);
+		b.FindBetweennessCentrality(0);
+		b.PrintPathListArray();							//print off a list of all shortest path between every pair of vertex
 		
 	}
-	public static void test1(){
-		BinarySearchTree a = new BinarySearchTree(5);
-		System.out.println(BinarySearchTree.IndexCounter);
-		a.addNode(10);
-		System.out.println(BinarySearchTree.IndexCounter);
-		a.addNode(20);
-		System.out.println(BinarySearchTree.IndexCounter);
-		a.addNode(15);
-		System.out.println(BinarySearchTree.IndexCounter);
-		
-		System.out.println(a.addNode(20));
-		System.out.println(BinarySearchTree.IndexCounter);
-	}
+	
 	
 }

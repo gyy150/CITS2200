@@ -17,4 +17,13 @@ public class ShortestPath {
 		System.out.println("");
 	}
 	
+	
+	public void updateScore(int[] score){
+		for(int i: p ){
+			System.out.printf("----->%5d ", i);
+		}
+		System.out.println("");
+	}
+	
+	
 }

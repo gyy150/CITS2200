@@ -1,7 +1,10 @@
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,7 +49,7 @@ public class InputReader {
 			
 			while ((sCurrentLine = br.readLine()) != null) {
 				v = sCurrentLine.split(" ");
-				System.out.println(v[0] + " " + v[1]);
+				System.out.println("Processing edge from  "+v[0] + " <--------> " + v[1]);
 				vertex1 = Integer.parseInt(v[0]);
 				Vertex1Index = VertexTree.addNode(vertex1);				//if vertex has never been put into the tree brfore
 				
@@ -93,7 +96,6 @@ public class InputReader {
 				a = new PathList(E.Vertex1Index);								
 				PathListArray[E.Vertex1Index][E.Vertex2Index] = a;			  //initialize path from vertex1 to vertex2
 				
-				System.out.println("aaaaaaaaaaaaaaaaaaaaaaa"+Vertex1Index);
 				
 				AdjacencyMatrix[E.Vertex2Index][E.Vertex1Index] = 1;          //since the graph is undirected, then update the symmetrical value in the matrix
 				a = new PathList(E.Vertex2Index);
@@ -108,23 +110,38 @@ public class InputReader {
 		} 
 		
 	}
-	
-    public void PrintAdjacencyMatrix(){
-    	System.out.printf("    ");
+	/**
+	 * print the adjacnecy matrix on onsole, also write it in a file
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
+    public void PrintAdjacencyMatrix() throws FileNotFoundException, UnsupportedEncodingException{
+    	PrintWriter writer = new PrintWriter("AdjacencyMatrix.txt", "UTF-8");
+    	//System.out.printf("    ");
     	for(int i = 0; i < NumberofVertex; i++){
-    		System.out.printf("%5d ", i);
+    		//System.out.printf("%5d ", i);
+    		writer.printf("%5d ", i);
     	}
-    	System.out.println();
+    	//System.out.println();
+    	writer.println();
     	for(int i = 0; i < NumberofVertex; i++){
-    		  System.out.printf("%d   ", i);
+    		  //System.out.printf("%d   ", i);
+    		  writer.printf("%5d ", i);
 		      for(int j = 0; j < NumberofVertex; j++){
-		         System.out.printf("%5d ", AdjacencyMatrix[i][j]);
+		         //System.out.printf("%5d ", AdjacencyMatrix[i][j]);
+		         writer.printf("%5d ", AdjacencyMatrix[i][j]);
 		      }
-		      System.out.println();
+		     // System.out.println();
+		      writer.println();
 		}
+    	writer.close();
     }
+    /**
+     * print off a list of all shortest path between every pair of vertex
+     */
 	
     public void PrintPathListArray(){
+    	
     	int z = 0;
     	for(int i = 0; i < NumberofVertex; i++){
     		
@@ -139,30 +156,125 @@ public class InputReader {
 		      z++;
 		}
     }
-    
-    
-	
-	public int FindDegreeCentrality(){
+    /**
+     * find the index of top five vertex with degreee centrality , and print them on the console
+     * @return a array containing the index of vertex with top five number of connections
+     */
+   
+	public int[] FindTopFiveDegreeCentrality(){
 		
-		int MaxNumberOfConnection = 0;
-		int v = 0;
+		int[] result = new int[5];
+		int[] result_index = new int[5];
 	    for (int i=0; i < NumberofVertex; i++) {
 	    	int NumberofConnection = 0;
+	    	
 	    	for (int j=0; j < NumberofVertex; j++) {
 	    		if (AdjacencyMatrix[i][j] >0 ) {
 	    			NumberofConnection++;
 	    		}
 	    	}
+	    	//System.out.printf("The %d\n", NumberofConnection);
 	    	VertexEdgeNumber[i] = NumberofConnection;
-	        if(MaxNumberOfConnection < NumberofConnection ){
-	        	MaxNumberOfConnection = NumberofConnection;
-	        	v = i;
+	        if( result[4] < NumberofConnection ){													// MaxNumberOfConnection is stored at result[4]
+	        	
+	        	this.InsertInArray(result, 4, NumberofConnection );														        			
+				this.InsertInArray(result_index, 4, i );
+	        	
 	        }
+	        else if( result[0] < NumberofConnection ){													// MaxNumberOfConnection is greater than the smallest and smaller than the biggest
+	        	
+	        	for(int z=3;z>=0;z--){
+	        		if( result[z] <  NumberofConnection  ){
+	        			//System.out.printf("hello\n");
+						this.InsertInArray(result, z, NumberofConnection );														        			
+						this.InsertInArray(result_index, z, i );	
+						break;
+	        		}
+	        	}
+	        }
+	       
+	        //System.out.printf("%5d %5d %5d %5d %5d\n ", result[0],result[1],result[2],result[3],result[4]);
+		
 	    }
-	    return VertexEdgeNumber[v];
+	    System.out.printf("-------------------------------Reulst for top five vertexs according to degree centrality:--------------------------------------------------------------\n");
+	    for(int k =0; k<5;k++){
+        	System.out.printf("The %dth vertex with highest dgree centrality is %d(%d), degree centrality is %d\n",5-k, VertexArray[result_index[k]], result_index[k],  result[k]     );   
+        }
+	    System.out.printf("--------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+	    return result_index;
 	}
 	
+	private void InsertInArray(int[] a , int position, int value){
+		int temp = a[position];
+		a[position] = value;
+		int temp2;
+		if(position ==0){
+			a[0] = value;
+			return;
+		}
+		for(int z = position-1; z>=0;z--){
+			temp2 = a[z];
+			a[z] = temp;
+			temp = temp2;
+		}
+		//System.out.printf("%5d %5d %5d %5d %5d\n ", a[0],a[1],a[2],a[3],a[4]);
+		return;
+	}
 	
+	private void InsertInArray(float[] a , int position, float value){
+		float temp = a[position];
+		a[position] = value;
+		float temp2;
+		if(position ==0){
+			a[0] = value;
+			return;
+		}
+		for(int z = position-1; z>=0;z--){
+			temp2 = a[z];
+			a[z] = temp;
+			temp = temp2;
+		}
+		//System.out.printf("%5d %5d %5d %5d %5d\n ", a[0],a[1],a[2],a[3],a[4]);
+		return;
+	}
+	/**
+	 * print the top five vertex with closeness centrality on console
+	 * @return return the int array containing the index of top five vertex according to closeness centrality
+	 */
+	public int[] FindTopFiveClosenessCentrality(){
+		float[] result = new float[5];
+		int[] result_index = new int[5];
+		float ClosenessCentrality;
+		for (int i=0; i < NumberofVertex; i++) {
+			ClosenessCentrality = this.FindClosenessCentrality(i);
+			if( result[4] < ClosenessCentrality ){													// MaxNumberOfConnection is stored at result[4]
+	        	
+	        	this.InsertInArray(result, 4, ClosenessCentrality );														        			
+				this.InsertInArray(result_index, 4, i );
+	        	
+	        }
+	        else if( result[0] < ClosenessCentrality){													// MaxNumberOfConnection is greater than the smallest and smaller than the biggest
+	        	
+	        	for(int z=3;z>=0;z--){
+	        		if( result[z] <  ClosenessCentrality ){
+	        			//System.out.printf("hello\n");
+						this.InsertInArray(result, z, ClosenessCentrality );														        			
+						this.InsertInArray(result_index, z, i );	
+						break;
+	        		}
+	        	}
+	        }
+		}
+		System.out.printf("-------------------------------Reulst for top five vertexs according to closeness centrality:--------------------------------------------------------------\n");
+	    for(int k =0; k<5;k++){
+        	System.out.printf("The %dth vertex with highest closeness centrality is %d(%d), closeness centrality is %f\n",5-k, VertexArray[result_index[k]], result_index[k],  result[k]     );   
+        }
+	    System.out.printf("--------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+	    return result_index;
+		
+	}
+
+
 	public float FindClosenessCentrality(int SourceVertexIndex){
 		
 		int[] distance = new int[NumberofVertex];
@@ -174,13 +286,8 @@ public class InputReader {
 		for(int i =0; i<NumberofVertex-1; i++){
 			for( Edge E : EdgeList   ){												//each edge represent a egde going from vertex 1 to vertex 2
 				
-				System.out.println("" );
-				System.out.println(E.Vertex1Index );
-				System.out.println(E.Vertex2Index);
-				System.out.println(distance[E.Vertex1Index] );
-				System.out.println(distance[E.Vertex2Index] );
-				System.out.println("hellop" );
-				
+				//System.out.println("Processing edge from" + E.Vertex1Index + " <-------> " + E.Vertex2Index + "," + "current distance from"+ E.Vertex1Index + " is "+ distance[E.Vertex1Index]  +" " + "current distance from"+ E.Vertex2Index + " is " +distance[E.Vertex2Index]   );
+
 				int Weight = AdjacencyMatrix[E.Vertex1Index][E.Vertex2Index];         //the weight of egde from vertex1 to vertex 2
 				if( Weight ==0 ){													//if the weight is zero, which means it was not initialized in the adjacency matrix, then vertex1 cannot be reached from vertex1, meanning the actually distance is infinite
 					Weight = Integer.MAX_VALUE;
@@ -195,19 +302,22 @@ public class InputReader {
 			}
 		}
 		
-		int c = 0;
-		System.out.println("****************distance array for source vertex********************************" );
+		float c = 0;
+		
+		System.out.printf("****************distance array for source vertex: %d**********************************************************************************************\n",SourceVertexIndex );
 		for(int i = 0; i < NumberofVertex; i++){
 			 System.out.printf("%5d ",distance[i] );
 			 if(distance[i] == Integer.MAX_VALUE ){
-				 return 0;								//fairness is infinity, so close centrality is 0 
+				 
+				 //return 0;								//fairness is infinity, so close centrality is 0 
+				 distance[i] = 0;							//ignore the infinite distance if it can not be reached from the source vertex
 			 }
 			 c = c+ distance[i];
 		}
 		System.out.println();
-		System.out.println("****************distance array for source vertex********************************");
-		
-		return c;
+		System.out.printf("the Closeness Centrality of vertex %d(%d) is %f\n",this.VertexArray[SourceVertexIndex], SourceVertexIndex, 1/c );
+		System.out.println("************************************************************************************************************************************************");
+		return 1/c;
 	}
 	
 	
@@ -236,13 +346,10 @@ public class InputReader {
 			for(int i=0; i<NumberofVertex; i++){
 				for(int j =z ; j<NumberofVertex ; j++){
 					
-					System.out.printf("k: %d  i: %d   j: %d \n", k,i,j  );
+					//System.out.printf("k: %d  i: %d   j: %d \n", k,i,j  );
 					
-					ik = old_adjM[i][k];
-					if( ik ==0 ){													//if the weight is zero, which means it was not initialized in the adjacency matrix, then vertex1 cannot be reached from vertex1, meanning the actually distance is infinite
-						break;														//exit for loop straight away, since it wont yield any result 
-					}
 					
+					//this section must be executed first, cus if ik is zero, the rest of the for loop will be skiped, so need to update the new_adjm value first in case there is un updated value from previous cycle
 					ij = old_adjM[i][j];
 					//!!!!! update the value of new adjm as well, in case ij does not get updated, so when new and old is swaped, the value stored in old get lost
 					if(ij != new_adjM[i][j]){
@@ -251,9 +358,16 @@ public class InputReader {
 					}
 					//
 					
+					ik = old_adjM[i][k];
+					if( ik ==0 ){													//if the weight is zero, which means it was not initialized in the adjacency matrix, then vertex1 cannot be reached from vertex1, meanning the actually distance is infinite
+						//break;														//wrong---------exit for loop straight away, since it wont yield any result 
+						continue;														//cant exit stright away, cus still need to go through the rest of ij to update the unupdated value from last cycle
+					}
+					
 					if( ij ==0 ){													//if the weight is zero, which means it was not initialized in the adjacency matrix, then vertex1 cannot be reached from vertex1, meanning the actually distance is infinite
 						ij = Integer.MAX_VALUE;
 					}
+					
 					kj = old_adjM[k][j];
 					if(kj == 0){
 						continue;														//if distance from k to j is infinite, then it wont yield any reults as well, thus exit foor loop straight away
@@ -289,7 +403,7 @@ public class InputReader {
 					
 					if( ik+kj == ij    ){											//a new potential shortest path have been found 
 						
-						System.out.printf("equal----ik: %d  kj: %d   ij: %d \n", ik,kj,ij  );
+						//System.out.printf("a path equal to the current shortest path is found ----ik: %d  kj: %d   ij: %d \n", ik,kj,ij  );
 						
 						
 						p = a.combinePath(b);
@@ -297,20 +411,20 @@ public class InputReader {
 						c.addPath(p);                                //combine all the path from i to k with all the path from k to j, to get the all the path from i to j going through k 
 						c.increaseCountBy(size);
 						
-						System.out.printf("all path from %d to %d\n",i,j );
-						c.printAllPath();
+						//System.out.printf("all path from %d to %d\n",i,j );
+						//c.printAllPath();
 						
 						d.addPath(PathList.reversePath(p, j));      
 						d.increaseCountBy(size);		
 						
-						System.out.printf("all path from %d to %d\n",j,i );
-						d.printAllPath();
-						System.out.printf("\n" );
+						//System.out.printf("all path from %d to %d\n",j,i );
+						//d.printAllPath();
+						//System.out.printf("\n" );
 						
 					}
 					if(ik + kj < ij     ){												//path from i to k to j is a newer shortest path
 						
-						System.out.printf("shorter----ik: %d  kj: %d   ij: %d \n", ik,kj,ij  );
+						//System.out.printf("a path shorter than the current shortest path is found ----ik: %d  kj: %d   ij: %d \n", ik,kj,ij  );
 						
 						int size = a.getPathCount() * b.getPathCount();
 						
@@ -323,17 +437,17 @@ public class InputReader {
 						c.addPath(p);   
 						c.increaseCountBy(size);
 						
-						System.out.printf("all path from %d to %d\n",i,j );
-						c.printAllPath();
+						//System.out.printf("all path from %d to %d\n",i,j );
+						//c.printAllPath();
 						
 						new_adjM[j][i] = ik + kj;									//i to j must have the same distance since the graph is undirected
 						d.clearPath();
 						d.addPath(PathList.reversePath(p, j));    
 						d.increaseCountBy(size);
 						
-						System.out.printf("all path from %d to %d\n",j,i );
-						d.printAllPath();
-						System.out.printf("\n" );
+						//System.out.printf("all path from %d to %d\n",j,i );
+						//d.printAllPath();
+						//System.out.printf("\n" );
 						
 					}
 					
@@ -348,22 +462,57 @@ public class InputReader {
 		}
 		return 0;
 	}
-	
+	/**
+	 * 
+	 * @param a the attenuation coefficient
+	 * @return 
+	 */
+	public int[] FindTopFiveKatzCentrality(double a){
+		float[] result = new float[5];
+		int[] result_index = new int[5];
+		float KatzCentrality;
+		for (int i=0; i < NumberofVertex; i++) {
+			KatzCentrality = this.FindKatzCentrality(i,a);
+			if( result[4] < KatzCentrality ){													// MaxNumberOfConnection is stored at result[4]
+	        	
+	        	this.InsertInArray(result, 4, KatzCentrality );														        			
+				this.InsertInArray(result_index, 4, i );
+	        	
+	        }
+	        else if( result[0] < KatzCentrality){													// MaxNumberOfConnection is greater than the smallest and smaller than the biggest
+	        	
+	        	for(int z=3;z>=0;z--){
+	        		if( result[z] <  KatzCentrality ){
+	        			//System.out.printf("hello\n");
+						this.InsertInArray(result, z, KatzCentrality );														        			
+						this.InsertInArray(result_index, z, i );	
+						break;
+	        		}
+	        	}
+	        }
+		}
+		System.out.printf("-------------------------------Reulst for top five vertexs according to closeness centrality:--------------------------------------------------------------\n");
+	    for(int k =0; k<5;k++){
+        	System.out.printf("The %dth vertex with highest Katz centrality is %d(%d), closeness centrality is %f\n",5-k, VertexArray[result_index[k]], result_index[k],  result[k]     );   
+        }
+	    System.out.printf("--------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+	    return result_index;
+		
+	}
 	
 	
 	/***
-	 * 
+	 * finding the top five vertex according to Katz centrality
 	 * @param SourceVertexIndex
-	 * @param a   attenuation coefficient  //power of attenuation factor and number of hops away from source
-	 * @return
+	 * @return return the int array containing the index of top five vertex according to Katz centrality
 	 */
 	
-	public double FindKatzCentrality(int SourceVertexIndex, double a){
+	public float FindKatzCentrality(int SourceVertexIndex,double a){
 		//Breadth first search 
 		int[] hop = new int[NumberofVertex];						//an array to keep track of how many hops each vertex is away from the source
 		hop[SourceVertexIndex] = 0;									//source vertex is zero hops away
 		int[] colour = new int[NumberofVertex];
-		double KatzCentrality = 0;		
+		float KatzCentrality = 0;		
 		Arrays.fill(colour, 0); 									//mark all vertex as white
 		PriorityQueue<Integer> Q = new PriorityQueue<Integer>();
 		Q.add(SourceVertexIndex);
@@ -375,7 +524,7 @@ public class InputReader {
 					hop[i] = hop[w] + 1;
 					Q.add(i);
 					colour[i] = -1;									//mark the vertex as grey as it is in the vertex
-					KatzCentrality = KatzCentrality + Math.pow(a, hop[i]); 
+					KatzCentrality = KatzCentrality + (float)Math.pow(a, hop[i]); 
 				}
 			}
 			colour[w] = -2;											//mark the vertex as black after is done with it		
